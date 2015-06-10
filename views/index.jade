@@ -1,0 +1,77 @@
+extends layout
+
+block content
+
+    style.
+        body,
+        input{
+            font-size: 16px;
+        }
+        input{
+            padding: 10px;
+            border: 1px solid #999;
+        }
+
+        main{
+            max-width: 900px;
+            margin: auto;
+            padding-top: 80px;
+        }
+
+        .search-form{
+            position: fixed;
+            top: 0;
+            padding: 40px 0;
+            background: #fff;
+            width: 100%;
+        }
+
+        ul{
+            padding: 0;
+        }
+
+        li{
+            list-style: none;
+            margin: 0.5em 0;
+        }
+        span{
+            display: inline-block;
+            width: 100px;
+            margin: 0 2em 0 0;
+        }
+
+        .title{
+            width: 200px;
+        }
+        .paid-in,
+        .paid-out{
+            width: 80px;
+            text-align: right;
+        }
+
+    main
+
+        form.search-form
+
+            input(name="keywords", value="#{keywords}", placeholder="search")
+
+        p Total paid out: <strong>£#{totalPaidOut}</strong>
+        p Total paid in: <strong>£#{totalPaidIn}</strong>
+
+        ul
+
+            li
+                span.title Title
+                span.paid-in Paid in
+                span.paid-out Paid out
+                span.date Date
+                span.type Type
+
+            each row in statements
+
+                li
+                    span.title= row.title
+                    span.paid-in= row.paidIn
+                    span.paid-out= row.paidOut
+                    span.date= row.date
+                    span.type= row.type
