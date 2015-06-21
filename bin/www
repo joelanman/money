@@ -4,9 +4,20 @@
  * Module dependencies.
  */
 
+var fs = require('fs');
+var path = require('path');
+
 var app = require('../app');
 var debug = require('debug')('money:server');
 var http = require('http');
+
+
+var models = require(path.join(__dirname,"..","models"));
+
+var Transaction = models.Transaction;
+var Tag = models.Tag;
+var sequelize = models.sequelize;
+var statements = models.statements;
 
 /**
  * Get port from environment and store in Express.
@@ -25,9 +36,35 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+sequelize
+  .sync({ force: true })
+  .then(function(err) {
+    console.log('database synced');
+
+    statements.forEach(function(row, index, array){
+
+      // console.log(row);
+
+      // date,type,title,paid out,paid in,balance
+
+      Transaction.create({
+        paidIn:   Number(row[4]) * 100,
+        paidOut:  Number(row[3]) * 100,
+        date:     row[0],
+        title:    row[2],
+        type:     row[1],
+        balance:  Number(row[5]) * 100
+      });
+
+    });
+
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+
+  }, function (err) { 
+    console.log('An error occurred while creating the table: ', err);
+  });
 
 /**
  * Normalize a port into a number, string, or false.
