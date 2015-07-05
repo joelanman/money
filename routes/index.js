@@ -16,7 +16,6 @@ var TagTerm 	= models.TagTerm;
 router.get('/', function(req, res, next) {
 
 	var search = {
-
 		keywords: req.query.keywords || "",
 		dateFrom: req.query.dateFrom,
 		dateTo:	  req.query.dateTo
@@ -24,47 +23,99 @@ router.get('/', function(req, res, next) {
 
 	var where = {};
 
-	if (search.keywords){
-		where.title = {
-				$iLike: '%' + search.keywords + '%'
+	// keywords (and tags)
+
+	new Promise(function(resolve, reject){
+
+		if (!search.keywords){
+
+			resolve();
+			
+		} else {
+
+			if (search.keywords.toLowerCase().indexOf("tag:") === 0){
+
+				var tag = search.keywords.replace(/\s*tag:\s*/,"");
+
+				Tag.findOne({
+					where: {
+						name : {
+							$iLike: tag
+						}
+					},
+					include: [{ model: TagTerm, as: "Terms" }]
+				}).then(function(tag){
+
+					terms = [];
+
+					tag.Terms.forEach(function(term){
+						terms.push(term.term);
+					});
+
+					console.log(terms);
+
+					where.title = {
+						$iLike: { $any: terms}
+					};
+
+					resolve();
+
+				});
+
+			} else {
+
+				where.title = {
+					$iLike: '%' + search.keywords + '%'
+				}
+
+				resolve();
+
 			}
-	}
+		}
 
-	if (search.dateFrom && search.dateTo){
-		where.date = {
-				$between: [search.dateFrom, search.dateTo]
-			}
-	}
+	}).then(function(){
 
-	Transaction.findAll({
-		where: where
-	}).then(function(results){
+		// dates
 
-		var statements = [];
-		var totalPaidIn = 0;
-		var totalPaidOut = 0;
+		if (search.dateFrom && search.dateTo){
+			where.date = {
+					$between: [search.dateFrom, search.dateTo]
+				}
+		}
 
-		results.forEach(function(row, index, array){
-			statements.push({
-				'title':	row.title,
-				'date':		moment(row.date).format("DD MM YYYY"),
-				'paidIn':	numeral(row.paidIn/100).format("0,0.00"),
-				'paidOut': 	numeral(row.paidOut/100).format("0,0.00"),
-				'type': 	row.type
+	}).then(function(){
+
+		// run the query
+
+		Transaction.findAll({
+			where: where
+		}).then(function(results){
+
+			var statements = [];
+			var totalPaidIn = 0;
+			var totalPaidOut = 0;
+
+			results.forEach(function(row, index, array){
+				statements.push({
+					'title':	row.title,
+					'date':		moment(row.date).format("DD MM YYYY"),
+					'paidIn':	numeral(row.paidIn/100).format("0,0.00"),
+					'paidOut': 	numeral(row.paidOut/100).format("0,0.00"),
+					'type': 	row.type
+				});
+				totalPaidIn += row.paidIn;
+				totalPaidOut += row.paidOut;
 			});
-			totalPaidIn += row.paidIn;
-			totalPaidOut += row.paidOut;
+
+			res.render('index', {
+				search: 		search,
+				statements: 	statements,
+				totalPaidIn: 	numeral(totalPaidIn/100).format("0,0.00"),
+				totalPaidOut: 	numeral(totalPaidOut/100).format("0,0.00")
+			});
+
 		});
-
-		res.render('index', {
-			search: 		search,
-			statements: 	statements,
-			totalPaidIn: 	numeral(totalPaidIn/100).format("0,0.00"),
-			totalPaidOut: 	numeral(totalPaidOut/100).format("0,0.00")
-		});
-
-	});
-
+	})
 });
 
 router.get('/tags', function(req, res){
