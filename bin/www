@@ -37,26 +37,26 @@ var server = http.createServer(app);
  */
 
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(function(err) {
     console.log('database synced');
 
-    statements.forEach(function(row, index, array){
+    // statements.forEach(function(row, index, array){
 
-      // console.log(row);
+    //   // console.log(row);
 
-      // date,type,title,paid out,paid in,balance
+    //   // date,type,title,paid out,paid in,balance
 
-      Transaction.create({
-        paidIn:   Number(row[4]) * 100,
-        paidOut:  Number(row[3]) * 100,
-        date:     row[0],
-        title:    row[2],
-        type:     row[1],
-        balance:  Number(row[5]) * 100
-      });
+    //   Transaction.create({
+    //     paidIn:   Number(row[4]) * 100,
+    //     paidOut:  Number(row[3]) * 100,
+    //     date:     row[0],
+    //     title:    row[2],
+    //     type:     row[1],
+    //     balance:  Number(row[5]) * 100
+    //   });
 
-    });
+    // });
 
     server.listen(port);
     server.on('error', onError);
