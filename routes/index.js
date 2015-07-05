@@ -67,6 +67,15 @@ router.get('/', function(req, res, next) {
 
 });
 
+router.get('/tags', function(req, res){
+
+	Tag.findAll({include:[{ model: TagTerm, as: "Terms" }]})
+		.then(function(tags){
+			res.render("tags", {tags:tags});
+		})
+
+});
+
 router.post('/tags', function(req, res){
 
 	var terms = req.body.terms.split('\n');

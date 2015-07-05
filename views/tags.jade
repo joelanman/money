@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+    main
+
+        .tags
+
+            each tag in tags
+
+                .tag
+
+                    a(href="/tags/#{tag.name}")= tag.name
+
+                    each term in tag.Terms
+
+                        li= term.term
