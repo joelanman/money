@@ -10,19 +10,34 @@ var numeral = require('numeral');
 var models = require(path.join(__dirname,"..","models"));
 
 var Transaction = models.Transaction;
-var Tag = models.Tag;
-var TagTerm = models.TagTerm;
+var Tag 		= models.Tag;
+var TagTerm 	= models.TagTerm;
 
 router.get('/', function(req, res, next) {
 
-	var keywords = req.query.keywords || "";
+	var search = {
+
+		keywords: req.query.keywords || "",
+		dateFrom: req.query.dateFrom,
+		dateTo:	  req.query.dateTo
+	}
+
+	var where = {};
+
+	if (search.keywords){
+		where.title = {
+				$iLike: '%' + search.keywords + '%'
+			}
+	}
+
+	if (search.dateFrom && search.dateTo){
+		where.date = {
+				$between: [search.dateFrom, search.dateTo]
+			}
+	}
 
 	Transaction.findAll({
-		where:{
-			title:{
-				$iLike: '%'+keywords+'%'
-			}
-		}
+		where: where
 	}).then(function(results){
 
 		var statements = [];
@@ -42,7 +57,7 @@ router.get('/', function(req, res, next) {
 		});
 
 		res.render('index', {
-			keywords: keywords,
+			search: 		search,
 			statements: 	statements,
 			totalPaidIn: 	numeral(totalPaidIn/100).format("0,0.00"),
 			totalPaidOut: 	numeral(totalPaidOut/100).format("0,0.00")
@@ -55,7 +70,9 @@ router.get('/', function(req, res, next) {
 router.post('/tags', function(req, res){
 
 	var terms = req.body.terms.split('\n');
-	var tagTerms = [];
+	var tagTermPromises = [];
+
+	// make promises for all tag terms
 
 	terms.forEach(function(term){
 
@@ -67,24 +84,35 @@ router.post('/tags', function(req, res){
 
 	});
 
-	Promise.all(tagTermPromises)
-		   .then(function(tagTerms){
+	// wait for all promises to complete
 
-		Tag.create({
-			
-			name: req.body.name
+	Promise
+		.all(tagTermPromises)
+		.bind({})
+		.then(function(tagTerms){
+
+			this.tagTerms = tagTerms;
+
+			// create the parent tag
+
+			return Tag.create({
+				
+				name: req.body.name
+
+			})
 
 		}).then(function(tag){
 
-			tag.setTerms(tagTerms).then(function(){
+			// set tag id on the tag terms
 
-				res.redirect("/");
+			return tag.setTerms(this.tagTerms)
 
-			});
+		}).then(function(){
+
+			res.redirect("/");
 
 		});
 
-	})
 
 });
 

@@ -1,8 +1,95 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
-a {
-  color: #00B7FF;
+body,
+input{
+	font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+input[type="date"] {
+     -webkit-align-items: center;
+     display: -webkit-inline-flex;
+     font-family: Helvetica, Arial, sans-serif;
+     overflow: hidden;
+     padding: 10px;
+     -webkit-padding-start: 0px 10px;
+     line-height: 24px;
+}
+
+input::-webkit-datetime-edit {
+    -webkit-flex: 1;
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+}
+
+input::-webkit-datetime-edit-fields-wrapper {
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    padding: 0px 0;
+    white-space: pre;
+}
+
+input{
+    padding: 10px;
+    border: 1px solid #999;
+    line-height: 24px;
+}
+
+main{
+    max-width: 900px;
+    margin: auto;
+    padding-top: 140px;
+}
+
+.search-form{
+    position: fixed;
+    top: 0;
+    padding: 40px 0;
+    background: #fff;
+    width: 100%;
+}
+
+.search-form label{
+	display: inline-block;
+	width: 220px;
+}
+
+.search-form label span{
+	display: inline-block;
+	margin-bottom: 10px;
+}
+
+.search-form input{
+	display: inline-block;
+	margin-right: 1em;
+}
+
+ul{
+    padding: 0;
+}
+
+li{
+    list-style: none;
+    margin: 0.5em 0;
+}
+span{
+    display: inline-block;
+    width: 100px;
+    margin: 0 2em 0 0;
+}
+
+.title{
+    width: 200px;
+}
+.paid-in,
+.paid-out{
+    width: 80px;
+    text-align: right;
 }
