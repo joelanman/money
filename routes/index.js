@@ -129,10 +129,26 @@ router.get('/tags', function(req, res){
 
 router.post('/tags', function(req, res){
 
+	var tagName = req.body.name;
+	var tagId = req.body.id || false;
 	var terms = req.body.terms.split('\n');
+
 	var tagTermPromises = [];
 
-	// make promises for all tag terms
+	// if an Id is sent, delete all existing tag terms
+
+	if (tagId !== false){
+		TagTerm.destroy({
+			where: {
+				TagId: tagId
+			}
+		}).then(upsertTag)
+	} else {
+		upsertTag();
+	}
+
+	function upsertTag(){
+		// make promises for all tag terms
 
 	terms.forEach(function(term){
 
@@ -155,24 +171,67 @@ router.post('/tags', function(req, res){
 
 			// create the parent tag
 
-			return Tag.create({
+			return Tag.upsert({
 				
-				name: req.body.name
+				name: tagName
 
-			})
+			});
 
-		}).then(function(tag){
+		})
+		.then(function(created){
+
+			return Tag.findOne({
+
+				tagName: tagName
+
+			});
+
+		})
+		.then(function(tag){
 
 			// set tag id on the tag terms
 
-			return tag.setTerms(this.tagTerms)
+			return tag.setTerms(this.tagTerms);
 
 		}).then(function(){
 
 			res.redirect("/");
 
 		});
+	}
 
+});
+
+
+router.get('/new-tag', function(req, res){
+	res.render('tag', {tag:{"name":"","id":""}});
+});
+
+router.get('/tags/:tag', function(req, res){
+
+	var tagName = req.params.tag;
+
+	Tag
+		.findOne({
+			where: {
+				name : {
+					$iLike: tagName
+				}
+			},
+			include: [{ model: TagTerm, as: "Terms" }]
+		}).then(function(tag){
+
+			tag.termsString = "";
+
+			tag.Terms.forEach(function(term){
+				tag.termsString += term.term + "\n";
+			});
+
+			tag.termsString = tag.termsString.slice(0,-1);
+
+			res.render("tag", {tag:tag});
+
+		});
 
 });
 

@@ -12,8 +12,8 @@ var Sequelize = require('sequelize')
     });
 
 var Account = sequelize.define('Account', {
-  name:     Sequelize.STRING,
-  number:   Sequelize.STRING,
+  name:     {type: Sequelize.STRING, unique: true},
+  number:   {type: Sequelize.STRING, unique: true},
   sortCode: Sequelize.STRING
 }, {
   timestamps: false
@@ -31,7 +31,7 @@ var Transaction = sequelize.define('Transaction', {
 });
 
 var Tag = sequelize.define('Tag', {
-  name: Sequelize.STRING
+  name: {type: Sequelize.STRING, unique: true}
 }, {
   timestamps: false
 });

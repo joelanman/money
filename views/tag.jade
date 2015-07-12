@@ -78,13 +78,15 @@ block content
 
         form.tag-form(action="/tags", method="post")
 
+            input(type="hidden",name="id",value="#{tag.id}")
+
             .row
                 label.inline Tag name
-                input(name="name")
+                input(name="name", value="#{tag.name}")
 
             .row
                 label.inline Terms
-                textarea.large(name="terms")
+                textarea.large(name="terms")= tag.termsString
 
             .row
                 button.button Save changes
