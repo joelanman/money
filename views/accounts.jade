@@ -1,0 +1,13 @@
+extends layout
+
+block content
+
+    main
+
+        .accounts
+
+            each account in accounts
+
+                .account
+
+                    a(href="/accounts/#{account.name}")= account.name

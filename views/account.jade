@@ -1,0 +1,26 @@
+extends layout
+
+block content
+
+    main
+
+        h1 Account
+
+        form.tag-form(action="/accounts", method="post")
+
+            input(type="hidden",name="id",value="#{account.id}")
+
+            .row
+                label.inline Account name
+                input(name="name", value="#{account.name}")
+
+            .row
+                label.inline Account number
+                input(name="number", value="#{account.number}")
+
+            .row
+                label.inline Account sort code
+                input(name="sortCode", value="#{account.sortCode}")
+
+            .row
+                button.button Save changes

@@ -2,79 +2,9 @@ extends layout
 
 block content
 
-    style.
-        body,
-        textarea,
-        input{
-            font-size: 16px;
-            font-family: Helvetica, Arial, sans-serif;
-        }
-        textarea,
-        input{
-            padding: 1em;
-            border: 1px solid #999;
-        }
-
-        main{
-            max-width: 900px;
-            margin: auto;
-        }
-
-        .search-form{
-            position: fixed;
-            top: 0;
-            padding: 40px 0;
-            background: #fff;
-            width: 100%;
-        }
-
-        ul{
-            padding: 0;
-        }
-
-        li{
-            list-style: none;
-            margin: 0.5em 0;
-        }
-        span{
-            display: inline-block;
-            width: 100px;
-            margin: 0 2em 0 0;
-        }
-
-        .title{
-            width: 200px;
-        }
-        .paid-in,
-        .paid-out{
-            width: 80px;
-            text-align: right;
-        }
-        .row{
-            margin: 1em 0;
-        }
-        label.inline{
-            display: inline-block;
-            width: 180px;
-            vertical-align: top;
-            padding: 1em 0;
-        }
-        .button{
-            background: #148;
-            color: #fff;
-            padding: 1em 1.4em;
-            border: none;
-            font-size: 16px;
-            border-radius: 4px;
-            box-shadow: 0 2px 2px rgba(0,0,0,0.3);
-            cursor: pointer;
-        }
-        textarea.large{
-            width: 300px;
-            height: 200px;
-        }
-
     main
+
+        h1 Tag
 
         form.tag-form(action="/tags", method="post")
 

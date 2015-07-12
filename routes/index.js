@@ -1,14 +1,15 @@
-var fs = require('fs');
+var fs 	 = require('fs');
 var path = require('path');
 
 var Promise = require("bluebird");
 var express = require('express');
-var router = express.Router();
-var moment = require('moment');
+var router  = express.Router();
+var moment  = require('moment');
 var numeral = require('numeral');
 
-var models = require(path.join(__dirname,"..","models"));
+var models  = require(path.join(__dirname,"..","models"));
 
+var Account 	= models.Account;
 var Transaction = models.Transaction;
 var Tag 		= models.Tag;
 var TagTerm 	= models.TagTerm;
@@ -38,21 +39,21 @@ router.get('/', function(req, res, next) {
 				var tag = search.keywords.replace(/\s*tag:\s*/,"");
 
 				Tag.findOne({
+
 					where: {
 						name : {
 							$iLike: tag
 						}
 					},
 					include: [{ model: TagTerm, as: "Terms" }]
+
 				}).then(function(tag){
 
 					terms = [];
 
 					tag.Terms.forEach(function(term){
-						terms.push(term.term);
+						terms.push('%' + term.term + '%');
 					});
-
-					console.log(terms);
 
 					where.title = {
 						$iLike: { $any: terms}
@@ -150,54 +151,51 @@ router.post('/tags', function(req, res){
 	function upsertTag(){
 		// make promises for all tag terms
 
-	terms.forEach(function(term){
+		terms.forEach(function(term){
 
-		tagTermPromises.push(
-			TagTerm.create({
-				term: term
-			})
-		);
-
-	});
-
-	// wait for all promises to complete
-
-	Promise
-		.all(tagTermPromises)
-		.bind({})
-		.then(function(tagTerms){
-
-			this.tagTerms = tagTerms;
-
-			// create the parent tag
-
-			return Tag.upsert({
-				
-				name: tagName
-
-			});
-
-		})
-		.then(function(created){
-
-			return Tag.findOne({
-
-				tagName: tagName
-
-			});
-
-		})
-		.then(function(tag){
-
-			// set tag id on the tag terms
-
-			return tag.setTerms(this.tagTerms);
-
-		}).then(function(){
-
-			res.redirect("/");
+			tagTermPromises.push(
+				TagTerm.create({
+					term: term
+				})
+			);
 
 		});
+
+		// wait for all promises to complete
+
+		Promise
+			.all(tagTermPromises)
+			.bind({})
+			.then(function(tagTerms){
+
+				this.tagTerms = tagTerms;
+
+				return Tag.upsert({
+					
+					name: tagName
+
+				});
+
+			})
+			.then(function(created){
+
+				return Tag.findOne({
+
+					tagName: tagName
+
+				});
+
+			})
+			.then(function(tag){
+
+				// set tag id on the tag terms
+				return tag.setTerms(this.tagTerms);
+
+			}).then(function(){
+
+				res.redirect("/tags");
+
+			});
 	}
 
 });
@@ -221,6 +219,11 @@ router.get('/tags/:tag', function(req, res){
 			include: [{ model: TagTerm, as: "Terms" }]
 		}).then(function(tag){
 
+			if (!tag){
+				res.status(404).send("Tag not found");
+				return;
+			}
+
 			tag.termsString = "";
 
 			tag.Terms.forEach(function(term){
@@ -232,6 +235,49 @@ router.get('/tags/:tag', function(req, res){
 			res.render("tag", {tag:tag});
 
 		});
+
+});
+
+router.get('/new-account', function(req, res){
+	res.render('account', {account:{"name":"","number":"","sortCode":""}});
+});
+
+router.get('/accounts/:accountName', function(req, res){
+
+	Account
+		.findOne({
+			where:{
+				name: req.params.accountName
+			}
+		})
+		.then(function(account){
+			if (!account){
+				res.status(404).send("Account not found");
+				return;
+			}
+			res.render("account", {account:account});
+		})
+
+});
+
+router.get('/accounts', function(req, res){
+
+	Account.findAll()
+		.then(function(accounts){
+			res.render("accounts", {accounts:accounts});
+		})
+
+});
+
+router.post('/accounts', function(req, res){
+
+	Account.upsert({
+		name:     req.body.name,
+		number:   req.body.number,
+		sortCode: req.body.sortCode
+	}).then(function(){
+		res.redirect("/accounts");
+	})
 
 });
 

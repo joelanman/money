@@ -36,7 +36,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-var repopulate = true;
+var repopulate = false;
 
 sequelize
   .sync({ force: repopulate })

@@ -6,7 +6,8 @@ html {
 }
 
 body,
-input{
+input,
+textarea{
 	font-family: Helvetica, Arial, sans-serif;
     font-size: 16px;
 }
@@ -36,7 +37,8 @@ input::-webkit-datetime-edit-fields-wrapper {
     white-space: pre;
 }
 
-input{
+input,
+textarea{
     padding: 10px;
     border: 1px solid #999;
     line-height: 24px;
@@ -92,4 +94,28 @@ span{
 .paid-out{
     width: 80px;
     text-align: right;
+}
+
+.row{
+    margin: 1em 0;
+}
+label.inline{
+    display: inline-block;
+    width: 180px;
+    vertical-align: top;
+    padding: 1em 0;
+}
+.button{
+    background: #148;
+    color: #fff;
+    padding: 1em 1.4em;
+    border: none;
+    font-size: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+textarea.large{
+    width: 300px;
+    height: 200px;
 }

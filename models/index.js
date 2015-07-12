@@ -1,9 +1,9 @@
 var fs = require('fs');
-var path = require('path');
-var CSV = require('comma-separated-values');
+var path           = require('path');
+var CSV            = require('comma-separated-values');
 var statementsPath = path.join(__dirname, '../resources/statements.csv');
-var statementsCSV = fs.readFileSync(statementsPath, 'utf8');
-var statements = CSV.parse(statementsCSV);
+var statementsCSV  = fs.readFileSync(statementsPath, 'utf8');
+var statements     = CSV.parse(statementsCSV);
 
 var Sequelize = require('sequelize')
   , sequelize = new Sequelize('money', 'money', 'money', {
@@ -45,6 +45,7 @@ var TagTerm = sequelize.define('TagTerm', {
 Tag.hasMany(TagTerm, {as: 'Terms'});
 
 module.exports = {
+  Account:     Account,
   Transaction: Transaction,
   Tag:         Tag,
   TagTerm:     TagTerm,
