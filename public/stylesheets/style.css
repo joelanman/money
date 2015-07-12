@@ -12,6 +12,10 @@ textarea{
     font-size: 16px;
 }
 
+body{
+  margin: 0;
+}
+
 input[type="date"] {
      -webkit-align-items: center;
      display: -webkit-inline-flex;
@@ -44,16 +48,42 @@ textarea{
     line-height: 24px;
 }
 
+a,a:visited{
+  color: #187;
+}
+
+.main-header{
+    position: fixed;
+    top: 0;
+    padding: 20px 0;
+    background: #fff;
+    width: 100%;
+    z-index: 100;
+}
+
+.main-nav{
+    max-width: 900px;
+    margin: auto;
+    padding: 0 40px;
+}
+
+.main-nav a{
+  display: inline-block;
+  margin-right: 1em;
+  text-decoration: none;
+}
+
 main{
     max-width: 900px;
     margin: auto;
     padding-top: 140px;
+    padding: 140px 40px 0 40px;
 }
 
 .search-form{
     position: fixed;
     top: 0;
-    padding: 40px 0;
+    padding: 60px 0 20px 0;
     background: #fff;
     width: 100%;
 }
@@ -79,7 +109,7 @@ ul{
 
 li{
     list-style: none;
-    margin: 0.5em 0;
+    margin: 0.8em 0;
 }
 span{
     display: inline-block;
@@ -105,15 +135,23 @@ label.inline{
     vertical-align: top;
     padding: 1em 0;
 }
+
+.actions{
+  margin: 2em 0;
+}
+
+a.button,
 .button{
+    display: inline-block;
     background: #148;
     color: #fff;
-    padding: 1em 1.4em;
+    padding: 0.9em 1.2em;
     border: none;
     font-size: 16px;
-    border-radius: 4px;
+    border-radius: 3px;
     box-shadow: 0 2px 2px rgba(0,0,0,0.3);
     cursor: pointer;
+    text-decoration: none;
 }
 textarea.large{
     width: 300px;

@@ -2,12 +2,21 @@ extends layout
 
 block content
 
-    main
+  main
 
-        .accounts
+    h1 Accounts
 
-            each account in accounts
+    .actions
 
-                .account
+      a.button(href="/new-account") New account
 
-                    a(href="/accounts/#{account.name}")= account.name
+    .accounts
+
+      each account in accounts
+
+        .account
+
+          a(href="/accounts/#{account.name}")= account.name
+
+          .number= account.number
+          .sortCode= account.sortCode

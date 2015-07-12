@@ -34,7 +34,9 @@ router.get('/', function(req, res, next) {
 			
 		} else {
 
-			if (search.keywords.toLowerCase().indexOf("tag:") === 0){
+			if (search.keywords.toLowerCase().indexOf("tag:") == 0){
+
+				console.log("running tag search");
 
 				var tag = search.keywords.replace(/\s*tag:\s*/,"");
 
@@ -52,11 +54,14 @@ router.get('/', function(req, res, next) {
 					terms = [];
 
 					tag.Terms.forEach(function(term){
+
+						console.log(term.term);
 						terms.push('%' + term.term + '%');
+
 					});
 
 					where.title = {
-						$iLike: { $any: terms}
+						$iLike: { $any: terms }
 					};
 
 					resolve();
@@ -100,8 +105,8 @@ router.get('/', function(req, res, next) {
 				statements.push({
 					'title':	row.title,
 					'date':		moment(row.date).format("DD MM YYYY"),
-					'paidIn':	numeral(row.paidIn/100).format("0,0.00"),
-					'paidOut': 	numeral(row.paidOut/100).format("0,0.00"),
+					'paidIn':	(row.paidIn)  ? numeral(row.paidIn/100).format("0,0.00")  : "",
+					'paidOut': 	(row.paidOut) ? numeral(row.paidOut/100).format("0,0.00") : "",
 					'type': 	row.type
 				});
 				totalPaidIn += row.paidIn;
@@ -132,7 +137,7 @@ router.post('/tags', function(req, res){
 
 	var tagName = req.body.name;
 	var tagId = req.body.id || false;
-	var terms = req.body.terms.split('\n');
+	var terms = req.body.terms.replace(/\r/g,'').split('\n');
 
 	var tagTermPromises = [];
 
@@ -149,15 +154,19 @@ router.post('/tags', function(req, res){
 	}
 
 	function upsertTag(){
+
 		// make promises for all tag terms
 
 		terms.forEach(function(term){
 
-			tagTermPromises.push(
-				TagTerm.create({
-					term: term
-				})
-			);
+			if (term.replace(/\s/g, "").length>0){
+
+				tagTermPromises.push(
+					TagTerm.create({
+						term: term
+					})
+				);
+			}
 
 		});
 
@@ -239,7 +248,10 @@ router.get('/tags/:tag', function(req, res){
 });
 
 router.get('/new-account', function(req, res){
-	res.render('account', {account:{"name":"","number":"","sortCode":""}});
+	res.render('account', {account:{"name":		"",
+									"number":	"",
+									"sortCode":	"",
+									"id":		""}});
 });
 
 router.get('/accounts/:accountName', function(req, res){
@@ -271,13 +283,21 @@ router.get('/accounts', function(req, res){
 
 router.post('/accounts', function(req, res){
 
-	Account.upsert({
+	var account = {
 		name:     req.body.name,
 		number:   req.body.number,
 		sortCode: req.body.sortCode
-	}).then(function(){
-		res.redirect("/accounts");
-	})
+	};
+
+	if (req.body.id){
+		account.id = req.body.id;
+	}
+
+	Account
+		.upsert(account)
+		.then(function(){
+			res.redirect("/accounts");
+		})
 
 });
 

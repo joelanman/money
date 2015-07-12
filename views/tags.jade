@@ -2,16 +2,22 @@ extends layout
 
 block content
 
-    main
+  main
 
-        .tags
+    h1 Tags
 
-            each tag in tags
+    .actions
 
-                .tag
+      a.button(href="/new-tag") New tag
 
-                    a(href="/tags/#{tag.name}")= tag.name
+    .tags
 
-                    each term in tag.Terms
+      each tag in tags
 
-                        li= term.term
+        .tag
+
+          a(href="/tags/#{tag.name}")= tag.name
+
+          each term in tag.Terms
+
+            li= term.term
